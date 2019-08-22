@@ -181,7 +181,10 @@ where
     }
 }
 
-pub fn compose<Time, T, U>(left: SF<Time, T>, right: SF<Time, U>) -> SF<Time, Compose<T, U>>
+pub fn compose<Time, T, U>(
+    left: SF<Time, T>,
+    right: SF<Time, U>,
+) -> SF<Time, Compose<T, U>>
 where
     Time: Copy,
     T: SignalTrans<Time>,
@@ -226,7 +229,10 @@ where
     }
 }
 
-pub fn split<Time: Copy, T, U>(first: SF<Time, T>, second: SF<Time, U>) -> SF<Time, Split<T, U>>
+pub fn split<Time: Copy, T, U>(
+    first: SF<Time, T>,
+    second: SF<Time, U>,
+) -> SF<Time, Split<T, U>>
 where
     T: SignalTrans<Time>,
     U: SignalTrans<Time>,

@@ -53,12 +53,17 @@ where
                     )
                 }
             }
-            BasicTask::Stopped(val) => (BasicTask::Stopped(val.clone()), TaskOutput::Stopped(val)),
+            BasicTask::Stopped(val) => {
+                (BasicTask::Stopped(val.clone()), TaskOutput::Stopped(val))
+            }
         }
     }
 }
 
-pub fn task<Time, End, S, T>(run: SF<Time, S>, stop: SF<Time, T>) -> SF<Time, BasicTask<End, S, T>>
+pub fn task<Time, End, S, T>(
+    run: SF<Time, S>,
+    stop: SF<Time, T>,
+) -> SF<Time, BasicTask<End, S, T>>
 where
     Time: Copy,
     S: SignalTrans<Time>,
@@ -73,7 +78,9 @@ where
 }
 
 // TODO Write separate struct to avoid some of the type constraints
-pub fn forever<Time, Out, End, S>(run: SF<Time, S>) -> SF<Time, impl SignalTrans<Time>>
+pub fn forever<Time, Out, End, S>(
+    run: SF<Time, S>,
+) -> SF<Time, impl SignalTrans<Time>>
 where
     Time: Copy,
     S: SignalTrans<Time>,
@@ -118,16 +125,20 @@ where
                 } else {
                     let (task_next, task_val) = task.step(delta, input);
                     match task_val {
-                        TaskOutput::Running(val) => {
-                            (AddStop::new(task_next, stop_next), TaskOutput::Running(val))
-                        }
-                        TaskOutput::Stopped(val) => {
-                            (AddStop::Stopped(val.clone()), TaskOutput::Stopped(val))
-                        }
+                        TaskOutput::Running(val) => (
+                            AddStop::new(task_next, stop_next),
+                            TaskOutput::Running(val),
+                        ),
+                        TaskOutput::Stopped(val) => (
+                            AddStop::Stopped(val.clone()),
+                            TaskOutput::Stopped(val),
+                        ),
                     }
                 }
             }
-            AddStop::Stopped(val) => (AddStop::Stopped(val.clone()), TaskOutput::Stopped(val)),
+            AddStop::Stopped(val) => {
+                (AddStop::Stopped(val.clone()), TaskOutput::Stopped(val))
+            }
         }
     }
 }
@@ -146,7 +157,10 @@ where
     SF::from(AddStop::new(task.into_inner(), stop.into_inner()))
 }
 
-pub fn timeout<Time, Out, End, S>(task: SF<Time, S>, time: Time) -> SF<Time, impl SignalTrans<Time>>
+pub fn timeout<Time, Out, End, S>(
+    task: SF<Time, S>,
+    time: Time,
+) -> SF<Time, impl SignalTrans<Time>>
 where
     Time: Signed + Num + Copy,
     S: SignalTrans<Time, Output = TaskOutput<Out, End>>,

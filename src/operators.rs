@@ -3,8 +3,8 @@ use crate::std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Sub};
 use num_traits::{zero, Num};
 
 use crate::{
-    accum, compose, delay, fanout, identity, lift, map2, split, Compose, Fanout, Lift, SignalTrans,
-    Split, SF,
+    accum, compose, delay, fanout, identity, lift, map2, split, Compose,
+    Fanout, Lift, SignalTrans, Split, SF,
 };
 
 impl<Time: Copy, T, U> BitOr<SF<Time, U>> for SF<Time, T>
@@ -77,15 +77,18 @@ overload_operator!(Sub, sub, -);
 overload_operator!(Mul, mul, *);
 overload_operator!(Div, div, /);
 
-pub fn derivative<Time, T>() -> SF<Time, impl SignalTrans<Time, Input = T, Output = T>>
+pub fn derivative<Time, T>(
+) -> SF<Time, impl SignalTrans<Time, Input = T, Output = T>>
 where
     Time: Num + Copy + Into<T>,
     T: Num + Clone,
 {
-    (identity::<Time, T>() - delay::<Time, T>(zero())) | lift(|dt: Time, df| df / dt.into())
+    (identity::<Time, T>() - delay::<Time, T>(zero()))
+        | lift(|dt: Time, df| df / dt.into())
 }
 
-pub fn integral<Time, T>() -> SF<Time, impl SignalTrans<Time, Input = T, Output = T>>
+pub fn integral<Time, T>(
+) -> SF<Time, impl SignalTrans<Time, Input = T, Output = T>>
 where
     T: Num + Clone,
     Time: Num + Into<T>,
